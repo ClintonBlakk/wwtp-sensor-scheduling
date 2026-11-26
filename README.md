@@ -30,19 +30,36 @@ python -m pip install -r requirements.txt
 | `results/` | the CSV result tables behind every table and figure |
 
 ## Reproducing the results
-Set the budget used in the paper and run the scripts from the project root with the virtual environment active:
+Run everything from the project root with the virtual environment active, and with the sensor budget used in the paper (K = 1). Estimators and agents are saved with a `_b1` suffix for this budget.
 
+**1. Main experiment (dry-trained estimators)**
 ```powershell
 $env:WWTP_BUDGET = "1"
-python export_bsm1.py
-# then 01 -> 02 -> 04 -> 03 -> 05 -> 06 -> 07 in that order; each script's options are listed with --help
-.\run_retrain_experiment.ps1      # pooled retraining; several hours on a CPU laptop
+python export_bsm1.py --variants 8                 # dry, rain and perturbed influents var1-var8
+$est = "dry","dry_e1","dry_e2","dry_e3","dry_e4"   # five estimator seeds (0-4)
+for ($s = 0; $s -lt 5; $s++) {
+    $n = $est[$s]
+    python 01_train_estimator.py --seed $s --name $n
+    python 02_baselines.py --estimator $n          # zero-change, static, random, round-robin, heuristic
+    python 04_rotation_baseline.py --estimator $n  # tuned fixed rotations
+    python 03_train_agent.py --estimator $n --name main   --seeds 11 22 33 --steps 40000
+    python 03_train_agent.py --estimator $n --name robust --seeds 11 22 33 --steps 40000 --fault-train
+}
+python 05_robustness.py --agents main robust       # noise, drift, failed sensor, dropout
+python 06_stats.py                                 # block-bootstrap statistics (clean test window)
+python 07_generalise.py --variants var1 var2 var3 var4 var5 var6 var7 var8 --stress rain
+```
+Ablations use `03_train_agent.py` with one component removed (`--no-mask`, `--arch mlp`, `--no-tod` or `--hist 4`), seeds 11 and 22, on estimators `dry_e1`, `dry_e3` and `dry_e4`.
+
+**2. Retraining on pooled influents, extra influents and linear baselines**
+```powershell
+.\run_retrain_experiment.ps1                       # several hours on a CPU laptop
 python 07_generalise.py --estimators pool pool_e1 pool_e2 pool_e3 pool_e4 --agents pooled `
   --variants var5 var6 var7 var8 var9 var10 var11 var12 var13 var14 var15 var16 `
   --stress dry rain --select-on dry var1 var2 var3 var4 --out-suffix _fair
+python 08_linear_baseline.py                       # ridge baselines, fitted on the dry influent only
 ```
-
-Seeds are fixed in `config.py` (agents 11, 22, 33; ablations 11, 22). Results will match the paper up to run-to-run differences in PyTorch on different hardware.
+The result tables are written to `results/`. Seeds are fixed in `config.py`. Results should match the paper up to run-to-run differences in PyTorch on different hardware.
 
 ## Limitations
 Simulation only; one base influent (the held-out influents are perturbations of it); budget of one sensor; open-loop operation. See Section 5 of the paper.
