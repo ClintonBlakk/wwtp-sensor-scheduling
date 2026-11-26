@@ -48,7 +48,9 @@ Seeds are fixed in `config.py` (agents 11, 22, 33; ablations 11, 22). Results wi
 Simulation only; one base influent (the held-out influents are perturbations of it); budget of one sensor; open-loop operation. See Section 5 of the paper.
 
 ## Citation
-Please cite the paper (reference to be added on publication) and this repository.
+If you use this code or the result tables, please cite the repository now, and the paper once it is published (the reference will be added here):
+
+Blakk CJ, Nwulu N, Akinlabi ET. Code and results for "Budgeted Sensor Scheduling for Effluent Ammonium and Nitrate Estimation in a Simulated Wastewater Plant: Deep Q-Learning versus Tuned Fixed Rotations in the Benchmark Simulation Model No. 1". 2026. https://github.com/ClintonBlakk/wwtp-sensor-scheduling
 
 ## Licence
 MIT, see `LICENSE`.
