@@ -1,0 +1,17 @@
+.venv/
+__pycache__/
+*.pyc
+models/
+data/raw/
+logs/
+*.pt
+*.npy
+*.bak
+*.bak2
+results_bundle*.zip
+all_baselines.txt
+baselines*.txt
+inspection_report.txt
+inspect_*.py
+results/*
+!results/*.csv
