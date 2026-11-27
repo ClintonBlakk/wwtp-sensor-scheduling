@@ -1,4 +1,4 @@
-"""
+﻿"""
 export_bsm1.py  -  Step 1 of the project: generate BSM1 data and save it as CSV.
 
 What it does
@@ -224,7 +224,6 @@ def check_report(df, name):
         t = np.arange(863, 1341)
         d = y[t + 2] - y[t]
         print(f"  {tgt}: {np.sqrt(np.mean(d ** 2)):.4f}")
-    print("  (first paper reported 0.5309 for NH4-N and 0.2764 for SNO - for orientation only)")
 
 
 # ----------------------------------------------------------------------------
